@@ -102,12 +102,7 @@ export const SmtLibModule = buildModule("SmtLibModule", (m) => {
   const poseidon2Element = m.useModule(Poseidon2AtModule).contract;
   const poseidon3Element = m.useModule(Poseidon3AtModule).contract;
 
-  const smtLib = m.contract("SmtLib", [], {
-    libraries: {
-      PoseidonUnit2L: poseidon2Element,
-      PoseidonUnit3L: poseidon3Element,
-    },
-  });
+  const smtLib = m.contract("SmtLib", [], {});
   return { smtLib };
 });
 

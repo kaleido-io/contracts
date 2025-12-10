@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.27;
 
-import {PoseidonUnit2L, PoseidonUnit3L} from "./Poseidon.sol";
 import {ArrayUtils} from "./ArrayUtils.sol";
 import {IHasher} from "../interfaces/IHasher.sol";
 
@@ -578,18 +577,20 @@ library SmtLib {
     function _getNodeHash(Data storage self, Node memory node) internal view returns (uint256) {
         uint256 nodeHash = 0;
         if (node.nodeType == NodeType.LEAF) {
+            uint256[3] memory params = [node.index, node.value, uint256(1)];
             if (address(self.hasher) != address(0)) {
-                uint256[3] memory params = [node.index, node.value, uint256(1)];
                 nodeHash = self.hasher.hash3(params);
             } else {
-                uint256[3] memory params = [node.index, node.value, uint256(1)];
-                nodeHash = PoseidonUnit3L.poseidon(params);
+                bytes memory encoded = abi.encode(params);
+                nodeHash = uint256(keccak256(encoded));
             }
         } else if (node.nodeType == NodeType.MIDDLE) {
+            uint256[2] memory params = [node.childLeft, node.childRight];
             if (address(self.hasher) != address(0)) {
-                nodeHash = self.hasher.hash2([node.childLeft, node.childRight]);
+                nodeHash = self.hasher.hash2(params);
             } else {
-                nodeHash = PoseidonUnit2L.poseidon([node.childLeft, node.childRight]);
+                bytes memory encoded = abi.encode(params);
+                nodeHash = uint256(keccak256(encoded));
             }
         }
         return nodeHash; // Note: expected to return 0 if NodeType.EMPTY, which is the only option left
