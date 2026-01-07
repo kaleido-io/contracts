@@ -4,6 +4,8 @@ pragma solidity 0.8.27;
 import {IState} from "../interfaces/IState.sol";
 import {SmtLib} from "../lib/SmtLib.sol";
 import {PoseidonUnit3L, PoseidonUnit4L} from "../lib/Poseidon.sol";
+import {IHasher} from "../interfaces/IHasher.sol";
+import {PoseidonHasher} from "../lib/hash/PoseidonHasher.sol";
 import {GenesisUtils} from "../lib/GenesisUtils.sol";
 
 error SMTDepthIsGreaterThanMaxAllowed();
@@ -96,9 +98,13 @@ library IdentityLib {
             revert IdTypeNotSupported();
         }
         self.isOldStateGenesis = true;
+        IHasher hasher = new PoseidonHasher();
         self.trees.claimsTree.initialize(depth);
+        self.trees.claimsTree.setHasher(hasher);
         self.trees.revocationsTree.initialize(depth);
+        self.trees.revocationsTree.setHasher(hasher);
         self.trees.rootsTree.initialize(depth);
+        self.trees.rootsTree.setHasher(hasher);
         self.id = GenesisUtils.calcIdFromEthAddress(idType, _identityAddr);
     }
 

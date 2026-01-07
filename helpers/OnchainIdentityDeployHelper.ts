@@ -6,7 +6,7 @@ export class OnchainIdentityDeployHelper {
   constructor(
     private signers: SignerWithAddress[],
     private readonly enableLogging: boolean = false,
-  ) {}
+  ) { }
 
   static async initialize(
     signers: SignerWithAddress[] | null = null,
@@ -24,6 +24,7 @@ export class OnchainIdentityDeployHelper {
   async deployIdentity(
     stateAddr: string,
     smtLibAddr: string,
+    poseidon2Addr: string,
     poseidon3Addr: string,
     poseidon4Addr: string,
     idType: string,
@@ -36,7 +37,7 @@ export class OnchainIdentityDeployHelper {
     this.log("======== Identity: deploy started ========");
 
     const cb = await this.deployClaimBuilder();
-    const il = await this.deployIdentityLib(smtLibAddr, poseidon3Addr, poseidon4Addr);
+    const il = await this.deployIdentityLib(smtLibAddr, poseidon2Addr, poseidon3Addr, poseidon4Addr);
 
     this.log("deploying Identity...");
     const IdentityFactory = await ethers.getContractFactory("IdentityExample", {
@@ -72,12 +73,14 @@ export class OnchainIdentityDeployHelper {
 
   async deployIdentityLib(
     smtpAddress: string,
+    poseidonUtil2lAddress: string,
     poseidonUtil3lAddress: string,
     poseidonUtil4lAddress: string,
   ): Promise<Contract> {
     const Identity = await ethers.getContractFactory("IdentityLib", {
       libraries: {
         SmtLib: smtpAddress,
+        PoseidonUnit2L: poseidonUtil2lAddress,
         PoseidonUnit3L: poseidonUtil3lAddress,
         PoseidonUnit4L: poseidonUtil4lAddress,
       },

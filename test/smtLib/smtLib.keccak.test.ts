@@ -1228,7 +1228,7 @@ describe("Binary search in SMT root history", () => {
 
   async function deployContractsFixture() {
     const deployHelper = await DeployHelper.initialize();
-    binarySearch = await deployHelper.deployBinarySearchTestWrapper();
+    binarySearch = await deployHelper.deployBinarySearchTestWrapper(true);
   }
 
   beforeEach(async () => {

@@ -3,7 +3,7 @@ pragma solidity 0.8.27;
 
 import {SmtLib} from "../lib/SmtLib.sol";
 
-contract BinarySearchTestWrapper {
+contract BinarySearchKeccakTestWrapper {
     SmtLib.Data internal smtData;
     using SmtLib for SmtLib.Data;
 

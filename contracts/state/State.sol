@@ -5,6 +5,7 @@ import {Ownable2StepUpgradeable} from "@openzeppelin/contracts-upgradeable/acces
 import {IState, MAX_SMT_DEPTH} from "../interfaces/IState.sol";
 import {IStateTransitionVerifier} from "../interfaces/IStateTransitionVerifier.sol";
 import {SmtLib} from "../lib/SmtLib.sol";
+import {PoseidonHasher} from "../lib/hash/PoseidonHasher.sol";
 import {PoseidonUnit1L} from "../lib/Poseidon.sol";
 import {StateLib} from "../lib/StateLib.sol";
 import {GenesisUtils} from "../lib/GenesisUtils.sol";
@@ -103,6 +104,7 @@ contract State is Ownable2StepUpgradeable, IState {
     ) public initializer {
         if (!_gistData.initialized) {
             _gistData.initialize(MAX_SMT_DEPTH);
+            _gistData.setHasher(new PoseidonHasher());
         }
 
         if (address(verifierContractAddr) == address(0)) {

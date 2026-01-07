@@ -73,8 +73,6 @@ export class DeployHelper {
     );
 
     const smtLib = await this.deploySmtLib(
-      await poseidon2Elements.getAddress(),
-      await poseidon3Elements.getAddress(),
       "SmtLib",
       deployStrategy,
     );
@@ -90,6 +88,8 @@ export class DeployHelper {
       deployStrategy,
       await smtLib.getAddress(),
       await poseidon1Elements.getAddress(),
+      await poseidon2Elements.getAddress(),
+      await poseidon3Elements.getAddress(),
       g16VerifierContractName,
     );
 
@@ -111,6 +111,8 @@ export class DeployHelper {
     deployStrategy: "basic" | "create2" = "basic",
     smtLibAddress: string,
     poseidon1Address: string,
+    poseidon2Address: string,
+    poseidon3Address: string,
     g16VerifierContractName:
       | "Groth16VerifierStateTransition"
       | "Groth16VerifierStub" = "Groth16VerifierStateTransition",
@@ -203,6 +205,8 @@ export class DeployHelper {
         StateLib: await stateLib.getAddress(),
         SmtLib: smtLibAddress,
         PoseidonUnit1L: poseidon1Address,
+        PoseidonUnit2L: poseidon2Address,
+        PoseidonUnit3L: poseidon3Address,
       },
     });
 
@@ -444,14 +448,22 @@ export class DeployHelper {
     return stateLibWrapper;
   }
 
-  async deployBinarySearchTestWrapper(): Promise<Contract> {
+  async deployBinarySearchTestWrapper(
+    useKeccakHashing: boolean = false,
+  ): Promise<Contract> {
     const smtLib = await this.deploySmtLib();
 
-    const bsWrapperName = "BinarySearchTestWrapper";
+    const bsWrapperName = useKeccakHashing ? "BinarySearchKeccakTestWrapper" : "BinarySearchPoseidonTestWrapper";
+    const libraries = {
+      SmtLib: await smtLib.getAddress(),
+    };
+    if (!useKeccakHashing) {
+      const [poseidon2Elements, poseidon3Elements] = await deployPoseidons([2, 3]);
+      libraries["PoseidonUnit2L"] = await poseidon2Elements.getAddress();
+      libraries["PoseidonUnit3L"] = await poseidon3Elements.getAddress();
+    }
     const BSWrapper = await ethers.getContractFactory(bsWrapperName, {
-      libraries: {
-        SmtLib: await smtLib.getAddress(),
-      },
+      libraries,
     });
     const bsWrapper = await BSWrapper.deploy();
     await bsWrapper.waitForDeployment();
