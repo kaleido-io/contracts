@@ -156,8 +156,7 @@
     "verify:polygon-mainnet": "npx hardhat run scripts/maintenance/verifyEtherescan.js --network polygon-mainnet",
     "lint:contracts": "npx solhint contracts/**/*.sol",
     "prettier:contracts": "prettier --write --plugin=prettier-plugin-solidity 'contracts/**/*.sol'",
-    "slither": "slither .",
-    "postinstall": "npx patch-package"
+    "slither": "slither ."
   },
   "overrides": {
     "ws": "^8.17.1",
